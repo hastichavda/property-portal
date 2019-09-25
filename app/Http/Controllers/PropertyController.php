@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Property;
 use App\Type;
 use Auth;
+use Toastr;
 
 use Illuminate\Http\Request;
 
@@ -18,7 +19,8 @@ class PropertyController extends Controller
     public function index()
     {
       $properties = Property::with('types')->get();
-      return view('admin.displayProperty',compact('properties'));   
+      return view('admin.displayProperty',compact('properties'));
+      // toastr()->success('there some error!',null, ["timeOut" => "3000"]);   
     }
 
     /**
@@ -53,7 +55,6 @@ class PropertyController extends Controller
       $request->image->move(public_path('/uploads/'), $imageName);
       $imagePath = '/uploads/'. $imageName;
       $property->image = $imagePath;
-
     
       $property->title = $request->title;
       $property->description = $request->description;
@@ -63,7 +64,8 @@ class PropertyController extends Controller
       $property->types()->attach(json_decode($request->types));
       $property->types;
       return response()->json([
-        'property' => $property
+        'property' => $property,
+        'success' => 'log in'
       ]);
     }
 
@@ -141,9 +143,8 @@ class PropertyController extends Controller
        
     public function getAllProperty()
     {   
-        $properties= Property::all();
+        $properties= Property::orderBy('id','DESC')->paginate(3);
         $types= Type::all();
-        $properties = Property::orderBy('id','DESC')->get();
         return view('welcome', compact('properties', 'types'));
     }
 

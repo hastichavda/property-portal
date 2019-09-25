@@ -4,6 +4,7 @@
     <form action="" metod="post" @submit.prevent="createProperty">
       <div class="form-group">
         <label for="">Image</label>
+         <dropzone></dropzone>
         <input  @change="onFileChange" ref="file" type="file" class="form-control pb-3">
       </div> 
       <div class="row">
@@ -44,12 +45,18 @@
 </template>
 <script>
 import axios from 'axios';
+import dropzone from './Dropzone'
+// import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+  
 export default {
   props:{
     propertydata: {
       type:Array,
       required:true
     },
+  },
+  components:{
+    dropzone
   },
   data()
   {
@@ -111,21 +118,25 @@ export default {
       property.append('types',  JSON.stringify(data.types));
       property.append('action',data.action);
   
-      axios.post('/property',property, {
+      let res = await axios.post('/property',property, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
       })
-      .then((res) => {
-        this.property.title = '';
-        this.property.description = '';
-        this.property.image = '';
-        this.property.price = '';
-        this.property.typeList = '';
-        this.property.action = '';
-        this.list.push(res.data.property);
-      })
-      .catch((err) => console.error(err));
+      this.property.title = '';
+      this.property.description = '';
+      this.property.image = '';
+      this.property.price = '';
+      this.property.typeList = '';
+      this.property.action = '';
+      this.list.push(res.data.property);
+    
+      if (res.data.success) {
+        this.$toaster.success('Your Data Enter successfully.')
+        return true
+      }
+      this.$toaster.error('There is some error.')
+      return false
     },
   }
 }

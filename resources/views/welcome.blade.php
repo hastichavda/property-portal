@@ -13,7 +13,7 @@
         <!-- Styles -->
         <style>
             html, body {
-                background-color: #fff;
+                background: #fff;
                 color: #636b6f;
                 font-family: 'Nunito', sans-serif;
                 font-weight: 200;
@@ -62,83 +62,91 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
-            .header1{
-                height: 70vh;
-                min-height: 500px;
-                width: 100%;
+            .imgcon
+            {
+                position: relative;
             }
-            .box{
-                background: skyblue;
-                color:  black;
+            .btnimg
+            {
+                background: #333231;
+                color: white;
+                position: absolute;
+                top: 15px;
+                right: 16px;
                 font-size: 18px;
+                border-radius: 5px 5px;
+                padding: 0 10px ;
                 font-weight: bold;
-                width:30%;
-                margin-left:  auto;
-                margin-right: auto;
-                -webkit-box-shadow: -1px 1px 24px 50px rgba(207,201,207,1);
-                -moz-box-shadow: -1px 1px 24px 7px rgba(207,201,207,1);
-                box-shadow: -1px 1px 24px 7px rgba(207,201,207,1);
             }
-            
+            .imgcontent
+            {
+                color: #3e3a36;
+                font-size: 20px;
+                font-weight: bold;
+            }
+            .colcolor:hover
+            {
+                background: #fff6e5;
+            }
+            .bodyback
+            {
+                background: #f5f5f5;
+            }
+            .card-img-top
+            {
+                width: 100%;
+                height: 12vw;
+                object-fit: cover;
+            }
         </style>
     </head>
-    <body>      
+    <body class="bodyback">      
         @include('header')  
-        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators ">
-                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active indicator"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1" ></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2" ></li>
-            </ol>
-            <div class="carousel-inner header1" data-interval="1">
-                <div class="carousel-item active">
-                    <img class="d-block" src="{{url('/images/4.jpg')}}">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block" src="{{url('/images/caros1.jpg')}}" width="100%">
-                </div>
-                <div class="carousel-item">
-                    <img class="d-block" src="{{url('/images/caros2.jpg')}}" width="100%">
-                </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon icon1" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next " href="#carouselExampleIndicators" role="button" data-slide="next">
-                <span class="carousel-control-next-icon icon1" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
-        <div class="box mt-1">
-            <h4 class="text-center">Property Type</h4>
-            <hr>   
-            <ul>
-                @foreach ($types as $type)
-                    <li class="list-group">
-                        <a href="{{ action('PropertyController@filterProperty',$type->id ) }}">
-                            {{$type->name}}
-                        </a>
-                    </li>
-                @endforeach
-            </ul> 
-        </div>
-
-        <div class="container">
-            <div class="row">
-            @foreach ($properties as $property)
-                <div class="col-sm-4 py-2">
-                    <div class="card card-body h-100">
-                        <img src="{{ URL::asset($property->image) }}"  alt="" width="100%" height="80%" >    
-                        <a href="{{ action('PropertyController@readMore',$property->id)}}" 
-                            class="btn btn-info">
-                            <strong>$ {{ $property->price }}</strong>
-                        </a>
+        <div class="row mt-4 ml-2">
+            <div class="col-sm-3 mb-3">
+                <div class="card">
+                    <div class="card-header category">
+                        <h4><strong>Property Type</strong></h4>
+                    </div>
+                    <div class="card-body">
+                        @foreach ($types as $type)
+                            <li class="list-group">
+                                <a href="{{ action('PropertyController@filterProperty',$type->id ) }}" >
+                                    {{$type->name}}
+                                </a>
+                            </li>
+                        @endforeach
                     </div>
                 </div>
-                @endforeach
             </div>
-        </div>      
+            <div class="col-md-8">
+                <div class="row">
+                    @foreach ($properties as $property)
+                    <div class="col-md-4">
+                    <div class="card-deck ">
+                        <div class="card colcolor"  style="height: 19rem;">
+                            <div class="container mt-2">
+                                <img src="{{ URL::asset($property->image) }}"  alt="" class="card-img-top"> 
+                            </div>
+                            <a href="{{ action('PropertyController@readMore',$property->id)}}" class="btnimg mt-1 mr-2">
+                                <strong> For {{ $property->action }}</strong>
+                            </a>
+                            <div class="card-body">
+                                <div class="imgcontent">
+                                    {{ $property->title }} <br>
+                                    $ {{ $property->price }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="mt-5 text-center">
+                    {{ $properties->links() }}
+                </div>
+            </div>
+        </div>
 
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

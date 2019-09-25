@@ -7,7 +7,8 @@
         <hr>
         <div class="form-group">
           <label for="">Type</label>
-          <input type="text" class="form-control" v-model="type.name">
+          <input type="text" class="form-control" v-model="type.name" :class="{ 'is-invalid': submitted && $v.type.name.$error }">
+          <div v-if="submitted && !$v.type.name.required" class="invalid-feedback">First Name is required</div>
         </div>
       </div>
       <button type="submit" class="btn btn-success">Add type</button>
@@ -27,6 +28,7 @@
  </div>
 </template>
 <script>
+import { required } from "vuelidate/lib/validators";
 export default {
  props: {
    typedata: {
@@ -39,8 +41,14 @@ export default {
      list: [],
      type: {
        name: ''
-     }
+     },
+     submitted:false
    };
+ },
+ validation: {
+   type: {
+     name: { required }
+   }
  },
  mounted() {
    console.log('mounted');
@@ -56,12 +64,22 @@ export default {
        name: this.type.name
      }
      console.log(data);
-     axios.post('/propertytype',data)
-       .then((res) => {
+     let res = await axios.post('/propertytype',data)
          this.type.name = '';
-         this.list.push(res.data.type)
-       })
-       .catch((err) => console.error(err));
+         this.list.push(res.data.type);
+
+         if(res.data.success)
+         {
+           this.$toaster.success('Entered Successfully');
+           return true;
+         }
+         this.$toaster.error('There is some error.');
+         return false;
+        this.submitted = true;
+         this.$v.$touch();
+              if (this.$v.$invalid) {
+                  return ;
+              }
    },
    deleteType(id, index)
    {
