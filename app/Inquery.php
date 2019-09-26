@@ -19,12 +19,12 @@ class Inquery extends Model
    ];
 
      
-   public function users()
+   public function user()
    {
        return $this->hasMany('App\User');
    }
 
-   public function properties()
+   public function property()
    {
        return $this->hasOne('App\Property');
    }

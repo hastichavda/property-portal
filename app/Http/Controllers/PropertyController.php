@@ -65,7 +65,7 @@ class PropertyController extends Controller
       $property->types;
       return response()->json([
         'property' => $property,
-        'success' => 'log in'
+        'success' => 'Enter data Successfully'
       ]);
     }
 

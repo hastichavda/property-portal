@@ -58,7 +58,8 @@ class InqueryController extends Controller
         $inquery->property_id = $request->property_id;
         $inquery->save();    
         return response()->json([
-            'inquery' => $inquery
+            'inquery' => $inquery,
+            'success' => 'Entered data successfully'
         ]);
     }
 

@@ -3,25 +3,60 @@
     <h2>Create Property</h2><hr>
     <form action="" metod="post" @submit.prevent="createProperty">
       <div class="form-group">
-        <label for="">Image</label>
-         <dropzone></dropzone>
-        <input  @change="onFileChange" ref="file" type="file" class="form-control pb-3">
+        <label for="image">Image</label>
+         
+        <input  @change="onFileChange"
+                ref="file" 
+                type="file" 
+                class="form-control pb-3"
+                id="image"
+                name="image"
+                :class="{ 'is-invalid': submitted && $v.property.image.$error }">
+        <div v-if="submitted && !$v.property.image.required " class="invalid-feedback">
+          Image is required
+        </div>
       </div> 
       <div class="row">
         <div class="col-sm-8">
-          <label for="">Title</label>
-          <input v-model="property.title" type="text" class="form-control">
+          <label for="title">Title</label>
+          <input v-model="property.title" 
+                 type="text" 
+                 class="form-control"
+                 id="title"
+                 name="title"
+                 :class="{'is-invalid' : submitted && $v.property.title.$error }" >
+          <div v-if="submitted && !$v.property.title.required" class="invalid-feedback">
+            Title is required
+          </div>
         </div>
         <div class="col-sm-4">
-          <label for="">Price</label>
-          <input v-model="property.price" type="text" class="form-control">
+          <label for="price">Price</label>
+          <input v-model="property.price" 
+                 type="text" 
+                 class="form-control"
+                 id="price" 
+                 name="price"
+                 :class="{ 'is-invalid': submitted && $v.property.price.$error }">
+           <div v-if="submitted && !$v.property.price.required.numeric" class="invalid-feedback">
+             Price is required
+           </div>
         </div>
       </div>
       <div class=" form-group ">
         <label>Action :</label> 
         <div class="form-control">
-          <input v-model="property.action" class="ml-3" type="radio" value="Rent" name="rentalType">Rent
-          <input v-model="property.action" class="ml-3" type="radio" value="sale" name="rentalType">Sale
+          <input v-model="property.action" 
+                 class="ml-3"
+                 type="radio" 
+                 value="Rent" 
+                 name="rentalType" 
+          > Rent
+          <input v-model="property.action" 
+                 class="ml-3" 
+                 type="radio" 
+                 value="sale" 
+                 name="rentalType" 
+          > Sale
         </div>
       </div>
       <div class="form-group">
@@ -36,8 +71,16 @@
         </select>
       </div>
       <div class=" form-group">
-        <label for="">Description</label>
-        <textarea v-model="property.description" rows="3" class="form-control"></textarea>
+        <label for="description">Description</label>
+        <textarea v-model="property.description" 
+                  rows="3" 
+                  class="form-control"
+                  id="description"
+                  name="description"
+                  :class="{ 'is-invalid': submitted && $v.property.description.$error }"></textarea>
+        <div v-if="submitted && !$v.property.description.required" class="invalid-feedback">
+          Description id required
+        </div>
       </div>
       <button type="submit" class="btn btn-success button">Submit</button>
     </form>
@@ -45,9 +88,8 @@
 </template>
 <script>
 import axios from 'axios';
-import dropzone from './Dropzone'
-// import 'vue2-dropzone/dist/vue2Dropzone.min.css'
-  
+import { required,numeric } from "vuelidate/lib/validators";
+
 export default {
   props:{
     propertydata: {
@@ -55,9 +97,7 @@ export default {
       required:true
     },
   },
-  components:{
-    dropzone
-  },
+
   data()
   {
     return {
@@ -70,8 +110,18 @@ export default {
         image:'',
         price:'',
         action:''
-      }   
+      } ,
+      submitted : false
    }
+  },
+  validations: 
+  {
+    property: {
+        title: { required },
+        description: { required },
+        image:{ required },
+        price:{ required }, 
+      }  
   },
   mounted()
   {
@@ -101,6 +151,14 @@ export default {
       reader.readAsDataURL(file);
     },
     async createProperty() {
+
+      this.submitted = true;
+      this.$v.property.$touch();
+      if(this.$v.$invalid)
+      {
+        return false;
+      }
+
       let data = {
         title: this.property.title,
         description: this.property.description,
@@ -130,6 +188,7 @@ export default {
       this.property.typeList = '';
       this.property.action = '';
       this.list.push(res.data.property);
+      this.$v.property.$reset()
     
       if (res.data.success) {
         this.$toaster.success('Your Data Enter successfully.')

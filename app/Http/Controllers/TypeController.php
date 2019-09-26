@@ -16,8 +16,8 @@ class TypeController extends Controller
     {
         $type = Type::all();
         return response()->json([
-            'types' => $type,
-            'success' => 'Enter data Successfully'
+           'success' => 'Enter data Successfully',
+           'types' => $type
         ]);
 
     }
@@ -48,7 +48,8 @@ class TypeController extends Controller
         $type->name = $request->name;
         $type->save();
         return response()->json([
-            'type' => $type
+            'type' => $type,
+            'success' => 'Enter data Successfully'
         ]);
     }
 

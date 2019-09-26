@@ -7,29 +7,76 @@
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
-              <label for="">First Name </label>
-              <input v-model="inquery.fname" type="text" class="form-control">
+              <label for="fname">First Name </label>
+              <input v-model="inquery.fname" 
+                     type="text" 
+                     class="form-control"
+                     id="fname"
+                     name="fname"
+                     :class="{ 'is-invalid': submitted && $v.inquery.fname.$error }">
+              <div v-if="submitted && !$v.inquery.fname.required" class="invalid-feedback">
+                First Name is required
+              </div>
             </div>
           </div>
           <div class="col-sm-6">
             <div class="form-group">
-              <label for="">Last Name </label>
-              <input v-model="inquery.lname" type="text" class="form-control">
+              <label for="lname">Last Name </label>
+              <input v-model="inquery.lname"
+                     type="text" 
+                     class="form-control"
+                     id="lname"
+                     name="lname"
+                     :class="{ 'is-invalid': submitted && $v.inquery.lname.$error }">
+              <div v-if="submitted && !$v.inquery.lname.required" class="invalid-feedback">
+                Last Name is required
+              </div>
             </div>
           </div>
         </div>
         <div class="form-group">
-          <label for="">Email</label>
-          <input v-model="inquery.email" type="text" class="form-control">
+          <label for="email">Email</label>
+          <input v-model="inquery.email" 
+                 type="text" 
+                 class="form-control"
+                 id="email"
+                 name="email"
+                 :class="{ 'is-invalid': submitted && $v.inquery.email.$error }">
+          <div v-if="submitted && !$v.inquery.email.$error" class="invalid-feedback">
+            <span v-if="!$v.inquery.email.required">Email is required</span>
+            <span v-if="!$v.inquery.email.email">Email is invalid</span>
+          </div>
         </div>
         <div class="form-group">
-            <label for="">Contact Number</label>
-            <input v-model="inquery.contactno" type="text" class="form-control">
+            <label for="contactno">Contact Number</label>
+            <input v-model="inquery.contactno" 
+                  type="text" 
+                  class="form-control"
+                  id="contactno"
+                  name="contactno"
+                  :class="{ 'is-invalid': submitted && $v.inquery.contactno.$error }">
+              <div v-if="submitted && !$v.inquery.contactno.$error" class="invalid-feedback">
+                <span v-if="!$v.inquery.contactno.required.numeric">
+                  Contact is required doesn't contain text
+                </span>
+                <span v-if="!$v.inquery.contactno.required.numeric">
+                  Contact must be 10 number
+                </span>
+              </div>
         </div>
         <input type="hidden" :value="inquery.property_id">
         <div class="form-group">
-            <label for="">Message</label>
-            <textarea v-model="inquery.message" class="form-control" cols="30" rows="5"></textarea>
+            <label for="message">Message</label>
+            <textarea v-model="inquery.message" 
+                      class="form-control" 
+                      cols="30"
+                      rows="5"
+                      id="message"
+                      name="message"
+                      :class="{ 'is-invalid': submitted && $v.inquery.message.$error }"></textarea>
+            <div v-if="submitted && !$v.inquery.message.required" class="invalid-feedback">
+              Message is required
+            </div>
         </div>
         <button class="con-btn">REQUEST INFO</button>
       </form>
@@ -39,6 +86,12 @@
 </template>
 
 <script>
+import {
+  required,
+  email,
+  minLength,
+  numeric
+} from "vuelidate/lib/validators/" ;
 export default {
   props:{
     inquerydata: {
@@ -60,8 +113,19 @@ export default {
         contactno: '',
         message: '',
         property_id:''
-      }
+      },
+      submitted: false
   }
+  },
+  validations:
+  {
+    inquery: {
+      fname: { required },
+      lname: { required },
+      email: { required, email },
+      contactno: { required , minLength: minLength(10) , numeric },
+      message: { required }
+    }
   },
   mounted()
   {
@@ -74,6 +138,12 @@ export default {
   },
   methods: {
     async createInquery(){
+      this.submitted = true;
+      this.$v.inquery.$touch()
+      if (this.$v.$invalid) {
+        return false
+      }
+
       let data = {
           fname: this.inquery.fname,
           lname: this.inquery.lname,
@@ -83,17 +153,22 @@ export default {
           property_id: this.inquery.property_id
       }
       console.log(data);
-      axios.post('/connect',data)
-          .then((res) => {
-            this.inquery.fname = '';
-            this.inquery.lname = '';
-            this.inquery.email = '';
-            this.inquery.contactno = '';
-            this.inquery.message = '';
-            this.inquery.property_id = '';
-            this.list.push(res.data.inquery);
-          })
-          .catch((err) => console.error(err));
+      let res = await axios.post('/connect',data)
+          this.inquery.fname = '';
+          this.inquery.lname = '';
+          this.inquery.email = '';
+          this.inquery.contactno = '';
+          this.inquery.message = '';
+          this.inquery.property_id = '';
+          this.list.push(res.data.inquery);
+          this.$v.inquery.$reset()
+          if(res.data.success)
+          {
+            this.$toaster.success('Your Request has been sent')
+            return true
+          }
+          this.$toaster.error ('There is some error')
+          return false
     }
   }
 }

@@ -22,7 +22,7 @@ class Property extends Model
         return $this->belongsToMany('App\Type');
     }
 
-    public function inqueries()
+    public function inquery()
     {
         return $this->hasOne('App\Inquery');
     }

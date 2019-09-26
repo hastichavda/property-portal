@@ -7,8 +7,13 @@
         <hr>
         <div class="form-group">
           <label for="">Type</label>
-          <input type="text" class="form-control" v-model="type.name" :class="{ 'is-invalid': submitted && $v.type.name.$error }">
-          <div v-if="submitted && !$v.type.name.required" class="invalid-feedback">First Name is required</div>
+          <input type="text"
+                 class="form-control" 
+                 v-model="type.name"
+                 :class="{ 'is-invalid': submitted && $v.type.name.$error }">
+          <div v-if="submitted && !$v.type.name.required" class="invalid-feedback">
+            Type is required
+          </div>
         </div>
       </div>
       <button type="submit" class="btn btn-success">Add type</button>
@@ -42,11 +47,12 @@ export default {
      type: {
        name: ''
      },
-     submitted:false
+     submitted: false
    };
  },
- validation: {
-   type: {
+ validations:
+ {
+   type:{
      name: { required }
    }
  },
@@ -60,26 +66,27 @@ export default {
  methods: {
    async createType()
    {
+      this.submitted = true;
+      this.$v.type.$touch()
+      if (this.$v.$invalid) {
+        return false
+      }
+
      let data = {
        name: this.type.name
      }
      console.log(data);
-     let res = await axios.post('/propertytype',data)
-         this.type.name = '';
-         this.list.push(res.data.type);
-
-         if(res.data.success)
-         {
-           this.$toaster.success('Entered Successfully');
-           return true;
-         }
-         this.$toaster.error('There is some error.');
-         return false;
-        this.submitted = true;
-         this.$v.$touch();
-              if (this.$v.$invalid) {
-                  return ;
-              }
+    let res = await axios.post('/propertytype',data)
+    
+      this.type.name = '';
+      this.list.push(res.data.type)
+      this.$v.type.$reset();
+      if(res.data.success) {
+        this.$toaster.success('Type is added successfully')
+        return true
+      }
+      this.$toaster.error('error');
+      return false
    },
    deleteType(id, index)
    {
