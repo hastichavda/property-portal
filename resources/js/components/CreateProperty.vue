@@ -191,7 +191,7 @@ export default {
       this.$v.property.$reset()
     
       if (res.data.success) {
-        this.$toaster.success('Your Data Enter successfully.')
+        this.$toaster.success('Your Data Enter successfully.');
         return true
       }
       this.$toaster.error('There is some error.')
