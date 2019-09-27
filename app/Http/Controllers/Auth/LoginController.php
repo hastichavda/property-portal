@@ -33,6 +33,7 @@ class LoginController extends Controller
     {
         if(Auth::user()->usertype == 'admin')
         {
+            session()->flash('message','Welcome Dashbord!',array('timeout' => 3000));
             return 'dashbord';
         }
         else {
@@ -48,4 +49,5 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
 }

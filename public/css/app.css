@@ -10644,3 +10644,10 @@ a.text-dark:focus {
   }
 }
 
+#flash-message {
+  position: absolute;
+  top: 30px;
+  right: 20px;
+  z-index: 10;
+}
+

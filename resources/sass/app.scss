@@ -8,3 +8,10 @@
 @import '~bootstrap/scss/bootstrap';
 
 
+#flash-message
+{
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    z-index: 10;
+}

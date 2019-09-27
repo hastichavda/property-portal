@@ -1,10 +1,16 @@
 <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @extends('layouts.app')
 @extends('layouts.sidebar')
-@section('content')
+<body>
+    @section('content')
     <div class="cont">
-        <div class="container">  
+    <div class="container">  
+            @if ($flash = session('message'))
+            <div id="flash-message" class="alert alert-success" role="alert">
+                {{ $flash }}
+            </div>
+            @endif
             <div class="card mb-5">
                 <h1>Welcome to Dashboard</h1>
             </div> 
@@ -41,6 +47,17 @@
         </div>
     </div>
 @endsection
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script>
+
+    $(document).ready(function(){
+            $("div.alert").delay(3000).slideUp(300);
+    });
+
+    </script>
+            
+</body>
 
 <style>
 .cont
